@@ -1,0 +1,51 @@
+participant_id: "FILL_IN_YOUR_REDROB_ID"
+challenge: "data_and_ai"
+submission_file: "submission.csv"
+
+approach:
+  name: "Hybrid Trust-Weighted Ranking Pipeline"
+  summary: >
+    Multi-factor scoring system combining TF-IDF semantic similarity with
+    structured feature scoring (skill trust, title fit, career quality,
+    experience band, location) and multiplicative behavioral reliability
+    and honeypot-risk multipliers. No external API calls or downloaded
+    models — fully reproducible on CPU in under 90 seconds for 100K candidates.
+
+components:
+  - name: "Semantic Fit (20%)"
+    implementation: "TF-IDF cosine similarity of candidate text vs JD text"
+    justification: "Captures vocabulary alignment without requiring network access"
+
+  - name: "Skill Match Trust (25%)"
+    implementation: "Per-skill trust score = proficiency weight + duration + endorsements"
+    justification: "Credibility-weighted, not just presence; per redrob_signals_doc skill fields"
+
+  - name: "Title/Seniority Fit (15%)"
+    implementation: "Keyword classification of current_title into AI/engineering/unrelated tiers"
+    justification: "JD explicitly seeks AI Engineer mandate"
+
+  - name: "Career Quality (20%)"
+    implementation: "Detects research-only, consulting-only, NLP/IR vs unrelated domain, title-chasing"
+    justification: "Direct disqualifiers from JD section 'Who is not a fit'"
+
+  - name: "Experience Fit (10%)"
+    implementation: "Piecewise linear score against the 5-9 yr soft band"
+    justification: "JD states 5-9 year band, 'flexible if other signals are strong'"
+
+  - name: "Location Fit (10%)"
+    implementation: "Tiered scoring: preferred / welcomed / Tier-1 / other India / overseas"
+    justification: "JD lists Pune/Noida preferred, Hyderabad/Mumbai/Delhi welcome"
+
+  - name: "Behavioral Multiplier"
+    implementation: "Product of recency, open_to_work, response_rate, interview_completion, notice_period"
+    justification: "redrob_signals_doc: unreachable candidates should not rank high regardless of profile quality"
+
+  - name: "Honeypot Risk Multiplier"
+    implementation: "Rule-based contradiction detection; 9 independent structural checks"
+    justification: "README: >10% honeypot rate in top-100 = auto-disqualification"
+
+runtime:
+  hardware: "single CPU core, 4GB RAM"
+  total_time_seconds: 68
+  candidates_processed: 100000
+  constraint_limit_seconds: 300
