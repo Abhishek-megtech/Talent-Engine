@@ -1,5 +1,4 @@
-participant_id: "FILL_IN_YOUR_REDROB_ID"
-challenge: "data_and_ai"
+
 submission_file: "submission.csv"
 
 approach:
