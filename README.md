@@ -1,7 +1,15 @@
 # Redrob Talent Intelligence — India Runs Data & AI Challenge
 
-Hybrid candidate ranking pipeline for the Redrob "Senior AI Engineer — Founding Team" JD.
-Ranks 100,000 candidates in **~70 seconds** on a single CPU core. No network calls, no model downloads, no API keys.
+This project is a lightweight candidate-ranking engine for the Redrob "Senior AI Engineer — Founding Team" challenge. It reads a `candidates.jsonl` file, scores each profile against the JD, and writes a ranked `submission.csv`.
+
+It is designed to run offline on a single CPU core, with no network calls, no model downloads, and no API keys.
+
+## What it does
+
+- Parses candidate profiles from JSONL
+- Computes structured fit scores from skills, title, experience, location, behavior, and honeypot checks
+- Adds a TF-IDF semantic match against the JD
+- Sorts candidates and exports the top results as CSV
 
 ## Quick start
 
@@ -13,11 +21,21 @@ python rank.py \
   --candidates path/to/candidates.jsonl \
   --out submission.csv
 
-# Validate against challenge rules
-python validate_submission.py submission.csv
-
 # Run tests
 python -m pytest tests/ -v
+```
+
+Input files:
+
+- `candidates.jsonl`: one candidate per line in JSON format
+- `submission.csv`: output file with `candidate_id`, `rank`, `score`, and `reasoning`
+
+If you want to sanity-check the output, run the tests after generating the CSV.
+
+Example `candidates.jsonl` line:
+
+```json
+{"candidate_id": "cand_001", "profile": {"current_title": "Senior AI Engineer", "years_of_experience": 8, "location": "Bengaluru, India"}, "skills": ["Python", "Machine Learning", "NLP"]}
 ```
 
 ## Architecture
